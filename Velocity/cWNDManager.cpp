@@ -236,7 +236,7 @@ LRESULT CALLBACK cWNDManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			DestroyWindow(pInstance->m_hwnd); //Send a WM_DESTROY message
 		}
 
-		if (wParam == 'd' || wParam == 'D')  //If d or D was pressed
+		if (wParam == 'q' || wParam == 'Q')  //If Q was pressed
 		{
 			drawMode = ++drawMode % 3;
 			if (drawMode == 0)        // fill mode
@@ -259,29 +259,34 @@ LRESULT CALLBACK cWNDManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			}
 			break;
 		}
-		/*if (wParam == VK_LEFT) //If the Left Arrow key was pressed
+		if (wParam == VK_LEFT | wParam == 'd' | wParam == 'A')
 		{
-			rotationAngle = rotationAngle + 5; //Increase rotation Angle
-			glRotatef(5.0f, 0.0f, 1.0f, 0.0f);
+			//Move one lane to the left
+			if (highwayLane > 1)
+			{
+				highwayLane--;
+			}
+			break;
+		}
+		if (wParam == VK_RIGHT | wParam == 'd' | wParam == 'D')
+		{
+			//Move one lane to the right
+			if (highwayLane < 3)
+			{
+				highwayLane++;
+			}
+			break;
+		}
+
+		//Switch between cameras
+		if (wParam == 'c' | wParam == 'C')
+		{
+			cameraToggle = !cameraToggle;
+			break;
+		}
 		
-		}
-		if (wParam == VK_RIGHT) //If the Left Arrow key was pressed
-		{
-			rotationAngle = rotationAngle - 5; //Decrease rotation Angle
-			glRotatef(-5.0f, 0.0f, 1.0f, 0.0f);
-		}
-		if (wParam == VK_UP) //If the Left Arrow key was pressed
-		{
-			//rotationAngle = rotationAngle - 5; //Decrease rotation Angle
-			glRotatef(5.0f, 1.0f, 0.0f, 0.0f);
-		}
-		if (wParam == VK_DOWN) //If the Left Arrow key was pressed
-		{
-			//rotationAngle = rotationAngle - 5; //Decrease rotation Angle
-			glRotatef(5.0f, 1.0f, 0.0f, 0.0f);
-		}
 		break;
-		*/
+		
 	case WM_SETFOCUS:
 		pInstance->b_windowFocus = true;
 		break;

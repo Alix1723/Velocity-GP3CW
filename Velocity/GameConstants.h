@@ -30,9 +30,8 @@ const float PLAYFIELDX = 100.0f;
 const float PLAYFIELDZ = 300.0f;
 
 extern int drawMode;
-extern float rotationAngle;
-extern float translationZ;
-extern bool fire;
+extern int highwayLane;
+extern bool cameraToggle;
 
 
 #endif

@@ -17,14 +17,13 @@
 #include "cModelLoader.h"
 #include "cPlayer.h"
 
-#define FONT_SZ 24
+#define FONT_SZ 42
 
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    LPSTR cmdLine,
                    int cmdShow)
 {
-
     //Set our window settings
     const int windowWidth = 1280;
     const int windowHeight = 720;
@@ -63,12 +62,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	//Player model
 	cModelLoader cobraModel;
 	cobraModel.initialise("Models/MkIIICobra.obj");
-
-	cPlayer player;// = new cPlayer();
+	cPlayer player;
 	player.initialise(glm::vec3(0, 0, 0),0,glm::vec3(1,1,1),glm::vec3(0,0,0),0.0f, true);
 
-	//.cModelLoader tardisModel;
-	//tardisModel.initialise("Models/tardis.obj");
+	//Highway
+	cModelLoader highwayModel;
+	highwayModel.initialise("Models/Highway.obj");
 
 	//Font loading
 	struct dtx_font *fntmain;
@@ -76,11 +75,24 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	dtx_prepare_range(fntmain, FONT_SZ, 0, 256);
 	dtx_use_font(fntmain, FONT_SZ);
 
+	//Camera
+	bool isCameraTopDown = false;
 	float cameraX = 0.0f;
-	float cameraY = 0.0f;
-	float cameraZ = 50.0f;
+	float cameraY = 40.0f;
+	float cameraZ = 80.0f;
 
+	float xOffset = 0.0f; //Movement variables
+	float smoothxOffset = 0.0f; //Smoothing out X movement
+	float maxDeadZone = 0.2f;
+	float maxDelta = 5; //How quickly to change position
+
+	int position = 2; //Which highway 'Lane' to use (1,2,3)
+
+	//Points
 	int playerPoints = 0;
+
+	float highwayWidth = 45.0f;
+	//highwayLane = 2;
 	
 	//Mouse input
 	cMouseControl* mouseInput = new cMouseControl();
@@ -99,8 +111,33 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		gluLookAt(0, 15, 50, 0, 0, 0, 0, 1, 0);
 
+		xOffset = highwayLane*30.0f - 60.0f;
+
+		//Smoothing on movement
+		if (xOffset != smoothxOffset){
+			float difference = (xOffset - smoothxOffset);
+
+			//Avoid Zeno's Arrow paradox with this check
+			if (difference < maxDeadZone & difference > -maxDeadZone)
+			{
+				smoothxOffset = xOffset; 
+			}
+			else
+			{	
+				smoothxOffset += difference / 2;
+			}
+		}
+		
+		//Alternate camera angle
+		if (cameraToggle)
+		{
+			gluLookAt(0, 400, -95, 0, 0, -100, 0, 1, 0);
+		}
+		else
+		{
+			gluLookAt(cameraX + smoothxOffset/2, cameraY, cameraZ, smoothxOffset, 0, 0, 0, 1, 0);
+		}
 
 		//Updating the game world
 
@@ -108,33 +145,13 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		if (pgmWNDMgr->isWindowFocused()) //Check if window has focus first
 		{
 			//Some DIY Input handling
-			std::vector<float> mouseDelta = mouseInput->GetMouseDelta();
-
-			if (GetAsyncKeyState(VK_LBUTTON))
-			{
-				if (mouseInput->IsTracking())
-				{	
-					glm::vec3 current = player.getPosition();
-					glm::vec3 tr = glm::vec3(mouseDelta[0], -mouseDelta[1], 0);
-					player.setPosition(current + tr);
-				}
-				else
-				{
-					mouseInput->StartTrackingMouse();
-					ShowCursor(false);
-				}
-			}
-			else
-			{
-				if (!GetAsyncKeyState(VK_LBUTTON) & mouseInput->IsTracking())
-				{
-					mouseInput->StopTrackingMouse();
-					ShowCursor(true);
-				}
-			}
+			//std::vector<float> mouseDelta = mouseInput->GetMouseDelta();
 		}
 
-		//Player model
+		//Highway model
+		highwayModel.renderMdl(glm::vec3(0, 0, 0));
+		
+		player.setPosition(glm::vec3(smoothxOffset, 0, 0));
 		cobraModel.renderMdl(player.getPosition());
 		player.update(elapsedTime);
 

@@ -7,5 +7,5 @@ GameConstants.cpp
 #include "GameConstants.h"
 
 int drawMode = 0;
-float rotationAngle = 0;
-float translationZ = 3;
+int highwayLane = 2;
+bool cameraToggle = false;
