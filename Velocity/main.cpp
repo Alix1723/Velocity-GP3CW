@@ -16,6 +16,7 @@
 #include "cMouseControl.h"
 #include "cModelLoader.h"
 #include "cPlayer.h"
+#include "cObstacle.h"
 
 #define FONT_SZ 42
 
@@ -69,6 +70,16 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	cModelLoader highwayModel;
 	highwayModel.initialise("Models/Highway.obj");
 
+	//Highway brackets
+	cModelLoader highwayBracket;
+	highwayBracket.initialise("Models/HighwayGate.obj");
+	
+	//Obstacles
+	cModelLoader obstacleModel;
+	obstacleModel.initialise("Models/Obstacle.obj");
+	
+	cObstacle obsArray[3];
+
 	//Font loading
 	struct dtx_font *fntmain;
 	fntmain = dtx_open_font("Fonts/eurostile.TTF", 0);
@@ -86,7 +97,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	float maxDeadZone = 0.2f;
 	float maxDelta = 5; //How quickly to change position
 
-	int position = 2; //Which highway 'Lane' to use (1,2,3)
+	float distance = 0.0f; //Total distance travelled (used for gates
 
 	//Points
 	int playerPoints = 0;
@@ -107,36 +118,42 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		theOGLWnd.initOGL();
-		glClearColor(0.1f,0.1f,0.1f,0.1f);
+		glClearColor(backgroundColours[0], backgroundColours[1], backgroundColours[2], 1.0f);
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
+		//Spawning new obstacles
+
+		//Updating horizontal (x) position
 		xOffset = highwayLane*30.0f - 60.0f;
 
-		//Smoothing on movement
+		//Smoothing x movement
 		if (xOffset != smoothxOffset){
 			float difference = (xOffset - smoothxOffset);
 
-			//Avoid Zeno's Arrow paradox with this check
+			//Avoid Zeno's "Arrow Paradox" with this check
 			if (difference < maxDeadZone & difference > -maxDeadZone)
 			{
 				smoothxOffset = xOffset; 
 			}
 			else
-			{	
+			{	//Divide the difference by 2
 				smoothxOffset += difference / 2;
 			}
 		}
+
+		//Increasing distance (for highway gates)
+		distance = fmod(distance + elapsedTime * 700, 1400);
 		
-		//Alternate camera angle
+		//Camera angle to use
 		if (cameraToggle)
-		{
-			gluLookAt(0, 400, -95, 0, 0, -100, 0, 1, 0);
+		{   
+			gluLookAt(0, 400, -109, 0, 0, -110, 0, 1, 0); //Top-down
 		}
 		else
 		{
-			gluLookAt(cameraX + smoothxOffset/2, cameraY, cameraZ, smoothxOffset, 0, 0, 0, 1, 0);
+			gluLookAt(cameraX + smoothxOffset/2, cameraY, cameraZ, smoothxOffset, 20, 0, 0, 1, 0); //Third person 'follow' camera
 		}
 
 		//Updating the game world
@@ -150,10 +167,18 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 		//Highway model
 		highwayModel.renderMdl(glm::vec3(0, 0, 0));
+
+		//Looping highway bracket
+		highwayBracket.renderMdl(glm::vec3(0, 0, 1200 - distance));
+
+		//Obstacles
+		//obstacleModel.renderMdl(glm::vec3(0, 0, 100));
 		
+		//Player
 		player.setPosition(glm::vec3(smoothxOffset, 0, 0));
 		cobraModel.renderMdl(player.getPosition());
 		player.update(elapsedTime);
+
 
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
@@ -165,11 +190,14 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		glPushAttrib(GL_DEPTH_TEST);
 		glDisable(GL_DEPTH_TEST);
 		
-		//Text
+		//Points
 		glTranslatef(50, 50, 0);
-		glColor3f(1, 1, 1);
 		std::string out = "POINTS : " + std::to_string(playerPoints);
 		dtx_string(out.c_str());
+
+		//Camera indicator
+		glTranslatef(950, 0, 0);
+		dtx_string(cameraToggle ? "[C] FOLLOW" : "[C] TOP");
 
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();

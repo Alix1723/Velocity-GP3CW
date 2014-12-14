@@ -25,6 +25,9 @@
     <ClCompile Include="cPlayer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="cObstacle.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cModel.h">
@@ -49,6 +52,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="cPlayer.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="cObstacle.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

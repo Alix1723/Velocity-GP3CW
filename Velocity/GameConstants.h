@@ -32,6 +32,7 @@ const float PLAYFIELDZ = 300.0f;
 extern int drawMode;
 extern int highwayLane;
 extern bool cameraToggle;
+extern float backgroundColours[3];
 
 
 #endif
