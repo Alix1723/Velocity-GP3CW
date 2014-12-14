@@ -67,7 +67,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cModel.cpp" />
+    <ClCompile Include="cModelLoader.cpp" />
     <ClCompile Include="cMouseControl.cpp" />
+    <ClCompile Include="cPlayer.cpp" />
     <ClCompile Include="cWNDManager.cpp" />
     <ClCompile Include="GameConstants.cpp" />
     <ClCompile Include="main.cpp" />
@@ -75,7 +77,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cModel.h" />
+    <ClInclude Include="cModelLoader.h" />
     <ClInclude Include="cMouseControl.h" />
+    <ClInclude Include="cPlayer.h" />
     <ClInclude Include="cWNDManager.h" />
     <ClInclude Include="GameConstants.h" />
     <ClInclude Include="wglext.h" />

@@ -4,9 +4,19 @@ cModel::cModel()
 {
 	m_mdlPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 	m_mdlRotation = 0.0f;
-	m_mdlVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
-	m_model = NULL;
+	m_mdlDirection = glm::vec3(0.0f, 0.0f, 0.0f);
+	m_mdlSpeed = 0.0f;
+	m_IsActive = false;
+	m_mdlScale = glm::vec3(1.0f, 1.0f, 1.0f);
+	m_Dimensions.s_mdldepth = 0.0f;
+	m_Dimensions.s_mdlheight = 0.0f;
+	m_Dimensions.s_mdlWidth = 0.0f;
+	m_mdlRadius = m_Dimensions.s_mdldepth / 2;
 }
+
+// +++++++++++++++++++++++++++++++++++++++++++++
+// Setters
+// +++++++++++++++++++++++++++++++++++++++++++++
 
 void cModel::setPosition(glm::vec3 mdlPosition)
 {
@@ -18,10 +28,40 @@ void cModel::setRotation(GLfloat mdlRotation)
 	m_mdlRotation = mdlRotation;
 }
 
-void cModel::setVelocity(glm::vec3 mdlVelocity)
+void cModel::setDirection(glm::vec3 mdlDirection)
 {
-	m_mdlVelocity = mdlVelocity;
+	m_mdlDirection = mdlDirection;
 }
+
+void cModel::setSpeed(float mdlSpeed)
+{
+	m_mdlSpeed = mdlSpeed;
+}
+
+void cModel::setIsActive(bool mdlIsActive)
+{
+	m_IsActive = mdlIsActive;
+}
+
+void cModel::setMdlDimensions(mdlDimensions mdlDims)
+{
+	m_Dimensions = mdlDims;
+	m_mdlRadius = m_Dimensions.s_mdldepth / 2;
+}
+
+void cModel::setMdlRadius(float mdlRadius)
+{
+	m_mdlRadius = mdlRadius;
+}
+
+void cModel::setScale(glm::vec3 mdlScale)
+{
+	m_mdlScale = mdlScale;
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++
+// Getters
+// +++++++++++++++++++++++++++++++++++++++++++++
 
 glm::vec3 cModel::getPosition()
 {
@@ -33,49 +73,70 @@ GLfloat cModel::getRotation()
 	return m_mdlRotation;
 }
 
-glm::vec3 cModel::getVelocity()
+glm::vec3 cModel::getDirection()
 {
-	return m_mdlVelocity;
+	return m_mdlDirection;
 }
 
-void cModel::initialise(const char* mdlFilename, glm::vec3 mdlPosition, GLfloat mdlRotation, glm::vec3 mdlVelocity)
+float cModel::getSpeed()
 {
-	m_model = glmReadOBJ(mdlFilename);
-	glmVertexNormals(m_model, 180.0, false);
+	return m_mdlSpeed;
+}
+
+bool cModel::isActive()
+{
+	return m_IsActive;
+}
+
+mdlDimensions cModel::getMdlDimensions()
+{
+	return m_Dimensions;
+}
+
+float cModel::getMdlRadius()
+{
+	return m_mdlRadius;
+}
+
+glm::vec3 cModel::getScale()
+{
+	return m_mdlScale;
+}
+
+void cModel::initialise(glm::vec3 mdlPosition, GLfloat mdlRotation, glm::vec3 mdlScale, glm::vec3 mdlDirection, float mdlSpeed, bool mdlIsActive)
+{
 	setPosition(mdlPosition);
 	setRotation(mdlRotation);
-	setVelocity(mdlVelocity);
+	setScale(mdlScale);
+	setDirection(mdlDirection);
+	setSpeed(mdlSpeed);
+	setIsActive(mdlIsActive);
+	m_Dimensions.s_mdldepth = 0.0f;
+	m_Dimensions.s_mdlheight = 0.0f;
+	m_Dimensions.s_mdlWidth = 0.0f;
+	m_mdlRadius = m_Dimensions.s_mdldepth / 2;
 	glm::vec3 mdlPos = getPosition();
 	GLfloat mdlRot = getRotation();
 	glRotatef(mdlRot, 0.0f, 1.0f, 0.0f);
 	glTranslatef(mdlPos.x, mdlPos.y, mdlPos.z);
-
-}
-void cModel::update(float elapsedTime)
-{
-	// Find out what direction we should be thrusting, using rotation.
-	glm::vec3 mdlVelocityAdd;
-	mdlVelocityAdd.x = -(float)glm::sin(m_mdlRotation);
-	mdlVelocityAdd.z = -(float)glm::cos(m_mdlRotation);
-	mdlVelocityAdd *= elapsedTime;
-
-	//m_mdlVelocity *=  mdlVelocityAdd;// elapsedTime;
-
-	m_mdlPosition += m_mdlVelocity;
-
-	glm::vec3 mdlPos = getVelocity();
-	glTranslatef(mdlPos.x, mdlPos.y, mdlPos.z);
-
 }
 
-void cModel::renderMdl()
+bool cModel::SphereSphereCollision(glm::vec3 mdlPosition, float mdlRadius)
 {
+	const float distSq = lengthSQRD(m_mdlPosition - mdlPosition);
 
-	glPushMatrix();
-	//transformations here...
-	glmDraw(m_model, GLM_SMOOTH | GLM_TEXTURE | GLM_MATERIAL);
-	// Render Text
-	glPopMatrix();
+	const float sumRadius = (m_mdlRadius + mdlRadius);
+
+	if (distSq < sumRadius * sumRadius)
+	{
+		return true; // Collision
+	}
+	return false; // No Collision
+}
+
+float cModel::lengthSQRD(glm::vec3 mdlLength)
+{
+	return (mdlLength.x * mdlLength.x) + (mdlLength.y * mdlLength.y) + (mdlLength.z * mdlLength.z);
 }
 
 cModel::~cModel()

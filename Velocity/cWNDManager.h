@@ -23,6 +23,7 @@ public:
 	void attachOGLWnd(windowOGL* winOGL);
 
 	bool isWNDRunning(); //Is the window running?
+	bool isWindowFocused();
 
 	HDC getWNDDC(); // Return Device context
 
@@ -48,6 +49,8 @@ private:
 	windowOGL* getAttachedWND();
 
 	float m_lastTime;
+
+	bool b_windowFocus;
 
 	HWND m_hwnd; //Window handle
 	HDC m_hdc; //Device context

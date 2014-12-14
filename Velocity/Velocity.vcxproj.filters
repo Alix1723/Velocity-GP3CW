@@ -19,6 +19,12 @@
     <ClCompile Include="cMouseControl.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="cModelLoader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="cPlayer.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cModel.h">
@@ -37,6 +43,12 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="cMouseControl.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="cModelLoader.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="cPlayer.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

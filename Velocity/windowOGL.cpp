@@ -17,7 +17,7 @@ bool windowOGL::initOGL()
 	glEnable(GL_LIGHT0);
 	GLfloat lightpos[] = { .5, 1., 1., 0. };
 	glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
-	onResize(1024, 768);
+	onResize(1280, 720);
 
     //Return success
     return true;
@@ -42,8 +42,7 @@ void windowOGL::onResize(int width, int height)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-
-    gluPerspective(45.0f, float(width) / float(height), 1.0f, 100.0f);
+    gluPerspective(45.0f, 16.0f / 9.0f, 1.0f, 5000.0f);
 
     glMatrixMode(GL_MODELVIEW);
 

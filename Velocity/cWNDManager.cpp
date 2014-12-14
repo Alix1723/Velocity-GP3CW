@@ -229,6 +229,7 @@ LRESULT CALLBACK cWNDManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		pInstance->getAttachedWND()->onResize(width, height); //Call the example's resize method
 	}
 		break;
+	
 	case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE) //If the escape key was pressed
 		{
@@ -258,7 +259,7 @@ LRESULT CALLBACK cWNDManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			}
 			break;
 		}
-		if (wParam == VK_LEFT) //If the Left Arrow key was pressed
+		/*if (wParam == VK_LEFT) //If the Left Arrow key was pressed
 		{
 			rotationAngle = rotationAngle + 5; //Increase rotation Angle
 			glRotatef(5.0f, 0.0f, 1.0f, 0.0f);
@@ -279,22 +280,15 @@ LRESULT CALLBACK cWNDManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			//rotationAngle = rotationAngle - 5; //Decrease rotation Angle
 			glRotatef(5.0f, 1.0f, 0.0f, 0.0f);
 		}
-		
-		//Mouse input
-		if (wParam == VK_LBUTTON)
-		{
-			/*cMouseControl mControl = getMouseControlInstance;
-			mControl.StartTrackingMouse();*/
-		}
-		
 		break;
-	case WM_KEYUP:
-		
-		if (wParam == VK_LBUTTON)
-		{
-			/*extern cMouseControl mControl;
-			mControl.StopTrackingMouse();*/
-		}
+		*/
+	case WM_SETFOCUS:
+		pInstance->b_windowFocus = true;
+		break;
+	case WM_KILLFOCUS:
+		pInstance->b_windowFocus = false;
+		break;
+
 	default:
 		break;
 	}
@@ -314,4 +308,9 @@ float cWNDManager::getElapsedSeconds()
 	float seconds = float(currentTime - m_lastTime);
 	m_lastTime = currentTime;
 	return seconds;
+}
+
+bool cWNDManager::isWindowFocused()
+{
+	return b_windowFocus;
 }

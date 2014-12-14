@@ -4,7 +4,7 @@
 #include "GameConstants.h"
 #include <vector>
 
-static class cMouseControl
+class cMouseControl
 {
 public:
 	cMouseControl();
