@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F40309BF-E6D8-416A-99D4-56E7B37717E2}</ProjectGuid>
+    <ProjectGuid>{6AC2355B-B46E-4AC0-8678-320E5B12BF7A}</ProjectGuid>
     <RootNamespace>Lab4</RootNamespace>
     <ProjectName>Velocity</ProjectName>
   </PropertyGroup>
