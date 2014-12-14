@@ -6,10 +6,13 @@
 
 #include "GameConstants.h"
 #include <windows.h>
+#include <vector>
 #include "windowOGL.h"
 #include "cWNDManager.h"
 #include "cModel.h"
 #include "libdrawtext-0.2.1\drawtext.h"
+#include "cMouseControl.h"
+
 
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
@@ -70,7 +73,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		return 1;
 	}
 
-	dtx_use_font(fontToUse, 12);
+	dtx_use_font(fontToUse, 24);
+	
+	//Mouse input
+	cMouseControl* mouseInput = new cMouseControl();
 	
 
     //This is the mainloop, we render frames until isRunning returns false
@@ -80,18 +86,46 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
         //We get the time that passed since the last frame
 		float elapsedTime = pgmWNDMgr->getElapsedSeconds();
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		//Do any pre-rendering logic
 		castleModel->update(elapsedTime);
 
+		//Input handling
+		std::vector<float> mouseDelta = mouseInput->GetMouseDelta();
+
+		//Mouse input
+		if (GetAsyncKeyState(VK_LBUTTON))
+		{
+			if (mouseInput->IsTracking())
+			{
+				//glRotatef(mouseDelta[1], 1.0f, 0.0f, 0.0f);
+				//glRotatef(mouseDelta[0], 0.0f, 1.0f, 0.0f);
+
+				castleModel->setVelocity(glm::vec3(mouseDelta[0], -mouseDelta[1], 0));
+					//newPos = castleModel->getPosition()
+			}
+			else
+			{
+				mouseInput->StartTrackingMouse();
+				ShowCursor(false);
+			}
+		}
+		else
+		{
+			if (!GetAsyncKeyState(VK_LBUTTON) & mouseInput->IsTracking())
+			{
+				mouseInput->StopTrackingMouse();
+				ShowCursor(true);
+			}
+		}
+
+		//Render models
 		glPushMatrix();
-		
-		//Render model
 		castleModel->renderMdl();
 		
 		// Render Text
-		dtx_string("Hello");
+		dtx_string("Hello World");
 
 
 		glPopMatrix();

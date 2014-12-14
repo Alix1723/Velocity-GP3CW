@@ -16,6 +16,9 @@
     <ClCompile Include="windowOGL.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="cMouseControl.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cModel.h">
@@ -31,6 +34,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="windowOGL.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="cMouseControl.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

@@ -12,6 +12,7 @@ cWNDManager.cpp
 #include "wglext.h"
 #include "windowOGL.h"
 #include "GameConstants.h"
+#include "cMouseControl.h"
 
 cWNDManager* cWNDManager::pInstance = NULL;
 
@@ -279,7 +280,21 @@ LRESULT CALLBACK cWNDManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			glRotatef(5.0f, 1.0f, 0.0f, 0.0f);
 		}
 		
+		//Mouse input
+		if (wParam == VK_LBUTTON)
+		{
+			/*cMouseControl mControl = getMouseControlInstance;
+			mControl.StartTrackingMouse();*/
+		}
+		
 		break;
+	case WM_KEYUP:
+		
+		if (wParam == VK_LBUTTON)
+		{
+			/*extern cMouseControl mControl;
+			mControl.StopTrackingMouse();*/
+		}
 	default:
 		break;
 	}

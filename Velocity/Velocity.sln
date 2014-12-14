@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2013 for Windows Desktop
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Velocity", "Velocity.vcxproj", "{F40309BF-E6D8-416A-99D4-56E7B37717E2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Velocity", "Velocity.vcxproj", "{6AC2355B-B46E-4AC0-8678-320E5B12BF7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F40309BF-E6D8-416A-99D4-56E7B37717E2}.Debug|Win32.ActiveCfg = Debug|Win32
-		{F40309BF-E6D8-416A-99D4-56E7B37717E2}.Debug|Win32.Build.0 = Debug|Win32
-		{F40309BF-E6D8-416A-99D4-56E7B37717E2}.Release|Win32.ActiveCfg = Release|Win32
-		{F40309BF-E6D8-416A-99D4-56E7B37717E2}.Release|Win32.Build.0 = Release|Win32
+		{6AC2355B-B46E-4AC0-8678-320E5B12BF7A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6AC2355B-B46E-4AC0-8678-320E5B12BF7A}.Debug|Win32.Build.0 = Debug|Win32
+		{6AC2355B-B46E-4AC0-8678-320E5B12BF7A}.Release|Win32.ActiveCfg = Release|Win32
+		{6AC2355B-B46E-4AC0-8678-320E5B12BF7A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
