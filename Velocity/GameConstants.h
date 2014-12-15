@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include <Windows.h>
 #include <GL\glut.h>
-/*#include <al.h>
+#include <al.h>
 #include <alc.h>
-#include <alut.h>*/
+#include <alut.h>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\geometric.hpp>
@@ -27,7 +27,8 @@ struct mdlDimensions{
 const float PLAYFIELDX = 100.0f;
 const float PLAYFIELDZ = 300.0f;
 
-extern bool IsGamePlaying;
+extern bool isGamePlaying;
+//extern bool 
 extern int drawMode;
 extern int highwayLane;
 extern bool cameraToggle;

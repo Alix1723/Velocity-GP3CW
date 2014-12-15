@@ -48,7 +48,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glm-0.3.2lib.lib;glew32.lib;glew32s.lib;libdrawtext.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glm-0.3.2lib.lib;glew32.lib;glew32s.lib;libdrawtext.lib;OpenAL32.lib;alut.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -68,10 +68,10 @@
   <ItemGroup>
     <ClCompile Include="cModel.cpp" />
     <ClCompile Include="cModelLoader.cpp" />
-    <ClCompile Include="cMouseControl.cpp" />
     <ClCompile Include="cObstacle.cpp" />
     <ClCompile Include="cPlayer.cpp" />
     <ClCompile Include="cSkyscraper.cpp" />
+    <ClCompile Include="cSound.cpp" />
     <ClCompile Include="cWNDManager.cpp" />
     <ClCompile Include="GameConstants.cpp" />
     <ClCompile Include="main.cpp" />
@@ -80,10 +80,10 @@
   <ItemGroup>
     <ClInclude Include="cModel.h" />
     <ClInclude Include="cModelLoader.h" />
-    <ClInclude Include="cMouseControl.h" />
     <ClInclude Include="cObstacle.h" />
     <ClInclude Include="cPlayer.h" />
     <ClInclude Include="cSkyscraper.h" />
+    <ClInclude Include="cSound.h" />
     <ClInclude Include="cWNDManager.h" />
     <ClInclude Include="GameConstants.h" />
     <ClInclude Include="wglext.h" />

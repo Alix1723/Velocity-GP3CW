@@ -16,9 +16,6 @@
     <ClCompile Include="windowOGL.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="cMouseControl.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="cModelLoader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -29,6 +26,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="cSkyscraper.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="cSound.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -48,9 +48,6 @@
     <ClInclude Include="windowOGL.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="cMouseControl.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="cModelLoader.h">
       <Filter>Headers</Filter>
     </ClInclude>
@@ -61,6 +58,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="cSkyscraper.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="cSound.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

@@ -13,11 +13,11 @@
 #include "cWNDManager.h"
 #include "cModel.h"
 #include "libdrawtext-0.2.1\drawtext.h"
-#include "cMouseControl.h"
 #include "cModelLoader.h"
 #include "cPlayer.h"
 #include "cObstacle.h"
 #include "cSkyscraper.h"
+#include "cSound.h"
 
 #define FONT_SZ 42
 
@@ -106,6 +106,17 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		skyList.push_back(sk);
 	}
 
+	//Audio loading
+	cSound pointsSound;
+	pointsSound.createContext();
+	pointsSound.loadWAVFile("Audio/scorePoint.wav");
+
+	cSound explodeSound;
+	explodeSound.createContext();
+	explodeSound.loadWAVFile("Audio/shipExplode.wav");
+
+	//FORMAT: WAV, PCM, 44.1khz, 16 bit
+
 	//Font loading
 	struct dtx_font *fntmain;
 	fntmain = dtx_open_font("Fonts/eurostile.TTF", 0);
@@ -144,7 +155,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		glLoadIdentity();
 
 		//Game is in action
-		if (IsGamePlaying)
+		if (isGamePlaying)
 		{
 			//Spawning new obstacles 
 			if (distance > nextObstacleSpawn)
@@ -191,7 +202,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		//Camera angle
 		if (cameraToggle)
 		{   
-			gluLookAt(0, 400, -109, 0, 0, -110, 0, 1, 0); //Top-down
+			gluLookAt(0, 500, -150, 0, 0, -155, 0, 1, 0); //Top-down
 		}
 		else
 		{
@@ -211,12 +222,14 @@ int WINAPI WinMain(HINSTANCE hInstance,
 			if ((obList[j].getPosition().z < 0) & (obList[j].getIsInPlay() == true))
 			{
 				obList[j].setIsInPlay(false);
+				pointsSound.playAudio(AL_FALSE);
 				playerPoints++;
 			}
 			//Collision with player
 			if (obList[j].SphereSphereCollision(player.getPosition(), 12) )
 			{
-				IsGamePlaying = false;
+				isGamePlaying = false;
+				//explodeSound.playAudio(AL_FALSE);
 				distance = 0;
 				xOffset = 0;
 				if (playerHighScore < playerPoints)
@@ -233,7 +246,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 			if (obList[j].getPosition().z < -200)
 			{
 				obList.erase((obList.begin() + j));
-				//break;
+				//break; Note: this causes all objects to flicker, whereas this only causes the next object in the array to flicker. (Use foreach/non-indexed loop?)
 			}
 			//Otherwise, move the obstacle down the highway
 			else
@@ -259,7 +272,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		}
 		
 		//Player positioning
-		player.setPosition(glm::vec3(smoothxOffset, IsGamePlaying ? 0 : -1000, 0));
+		player.setPosition(glm::vec3(smoothxOffset, isGamePlaying ? 0 : -1000, 0));
 		cobraModel.renderMdl(player.getPosition(),0.0f);
 		player.update(elapsedTime);
 
@@ -282,10 +295,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		glTranslatef(950, 0, 0);
 		dtx_string(cameraToggle ? "[C] FOLLOW" : "[C] TOP");
 
-		if (!IsGamePlaying)
+		//Start/finish display
+		glTranslatef(-500, 200, 0);
+		if (!isGamePlaying)
 		{
-			//Start/finish display
-			glTranslatef(-500, 200, 0);
 			std::string hiscore = "HIGH SCORE : " + std::to_string(playerHighScore) + "\nPRESS SPACE TO PLAY";
 			dtx_string(hiscore.c_str());
 		}

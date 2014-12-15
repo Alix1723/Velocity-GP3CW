@@ -12,7 +12,6 @@ cWNDManager.cpp
 #include "wglext.h"
 #include "windowOGL.h"
 #include "GameConstants.h"
-#include "cMouseControl.h"
 
 cWNDManager* cWNDManager::pInstance = NULL;
 
@@ -286,9 +285,9 @@ LRESULT CALLBACK cWNDManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		}
 
 		//Begin play
-		if ((wParam == VK_SPACE) & !IsGamePlaying)
+		if ((wParam == VK_SPACE) & !isGamePlaying)
 		{
-			IsGamePlaying = true;
+			isGamePlaying = true;
 		}
 		
 		break;
