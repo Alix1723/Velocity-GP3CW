@@ -17,6 +17,7 @@
 #include "cModelLoader.h"
 #include "cPlayer.h"
 #include "cObstacle.h"
+#include "cSkyscraper.h"
 
 #define FONT_SZ 42
 
@@ -58,8 +59,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
         return 1;
     }
 
-	//bool IsGamePlaying = false;
-
 	//Random seed
 	srand(time(NULL));
 	
@@ -78,12 +77,15 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	highwayBracket.initialise("Models/HighwayGate.obj");
 	
 	//Obstacles
-	cModelLoader obstacleModel;
-	obstacleModel.initialise("Models/Obstacle.obj");
-	
 	vector<cObstacle> obList;
-	float minSpawnDelay = 1;
-	float maxSpawnDelay = 10;
+	cModelLoader obstacleModel;
+	obstacleModel.initialise("Models/Obstacle.obj");	
+
+	float minSpawnDelay = 80.0f;  //Minimum delay between each spawn
+	float maxSpawnDelay = 450.0f; //Maximum delay from last spawn (minimum + random value between 0 and this maximum);
+
+	//Skyscrapers
+	//vector<cSkysc> 
 
 	//Font loading
 	struct dtx_font *fntmain;
@@ -97,21 +99,16 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	float cameraY = 40.0f;
 	float cameraZ = 80.0f;
 
-	float xOffset = 0.0f; //Movement variables
+	//Movement variables
+	float xOffset = 0.0f;
 	float smoothxOffset = 0.0f; //Smoothing out X movement
-	float maxDeadZone = 0.2f;
-	float maxDelta = 5; //How quickly to change position
+	float maxDeadZone = 0.2f; //Threshold to prevent smoothing snapping back and forth
+	float maxDelta = 5; //How quickly to move between lanes
 
-	float distance = 0.0f; //Total distance travelled (used for gates
+	float distance = 0.0f; //Total distance travelled (used for gates and obstacles)
 
-	//Points
-	int playerPoints = 0;
-
-	float highwayWidth = 45.0f;
-	//highwayLane = 2;
-	
-	//Mouse input
-	cMouseControl* mouseInput = new cMouseControl();
+	//Distance before the first obstacles will spawn
+	float nextObstacleSpawn = 1000;	
 
     //This is the mainloop, we render frames until isRunning returns false
 	while (pgmWNDMgr->isWNDRunning())
@@ -128,10 +125,28 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
+		//Game is in action
 		if (IsGamePlaying)
 		{
-			//Spawning new obstacles
+			//Spawning new obstacles 
+			if (distance > nextObstacleSpawn)
+			{
+				//Create a new obstacle object
+				cObstacle* newObstacle = new cObstacle();
+					newObstacle->setPosition(glm::vec3((int)(rand() % 3) * 30 - 30, 0, 200));
+					newObstacle->setRotation(0);
+					newObstacle->setScale(glm::vec3(1, 1, 1));
+					newObstacle->setDirection(glm::vec3(0, 0, 0));
+					newObstacle->setSpeed(0);
+					newObstacle->setIsActive(true);
+					newObstacle->setIsInPlay(true);    
+					newObstacle->setStartZ(distance);
 
+				obList.push_back(*newObstacle);
+				
+				//Determine when the next obstacle will spawn
+				nextObstacleSpawn = distance + minSpawnDelay + (fmod(rand(),maxSpawnDelay));
+			}
 
 			//Updating horizontal (x) position
 			xOffset = highwayLane*30.0f - 60.0f;
@@ -154,7 +169,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 			//Increasing distance with time
 			distance = distance + elapsedTime * 700;
 		}
-		//Camera angle to use
+
+		//Camera angle
 		if (cameraToggle)
 		{   
 			gluLookAt(0, 400, -109, 0, 0, -110, 0, 1, 0); //Top-down
@@ -164,15 +180,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 			gluLookAt(cameraX + smoothxOffset/2, cameraY, cameraZ, smoothxOffset, 20, 0, 0, 1, 0); //Third person 'follow' camera
 		}
 
-		//Updating the game world
-
-		//Inputs
-		if (pgmWNDMgr->isWindowFocused()) //Check if window has focus first
-		{
-			//Some DIY Input handling
-			//std::vector<float> mouseDelta = mouseInput->GetMouseDelta();
-		}
-
 		//Highway model
 		highwayModel.renderMdl(glm::vec3(0, 0, 0));
 
@@ -180,9 +187,42 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		highwayBracket.renderMdl(glm::vec3(0, 0, 1200 - fmod(distance,1400)));
 
 		//Obstacles
-		//obstacleModel.renderMdl(glm::vec3(0, 0, 100));
+		for(int j = 0; j < obList.size(); j++)
+		{
+			//Checking if the player has moved past the obstacle, and scored a point
+			if ((obList[j].getPosition().z < 0) & (obList[j].getIsInPlay() == true))
+			{
+				obList[j].setIsInPlay(false);
+				playerPoints++;
+			}
+			//Collision with player
+			if (obList[j].SphereSphereCollision(player.getPosition(), 10) & (obList[j].getIsInPlay() == true))
+			{
+				IsGamePlaying = false;
+				distance = 0;
+				xOffset = 0;
+				playerHighScore = playerPoints;
+				playerPoints = 0;
+				obList.clear();
+				break;
+			}
+
+			//Check if the obstacle has moved off the world
+			if (obList[j].getPosition().z < -200)
+			{
+				obList.erase((obList.begin() + j));
+				break;
+			}
+			//Otherwise, move the obstacle down the highway
+			else
+			{
+				obList[j].setPosition(glm::vec3(obList[j].getPosition().x, 0, 1200 - (distance - obList[j].getStartZ())));
+				obstacleModel.renderMdl(obList[j].getPosition());
+				obList[j].update(elapsedTime);
+			}
+		}
 		
-		//Player
+		//Player positioning
 		player.setPosition(glm::vec3(smoothxOffset, IsGamePlaying ? 0 : -1000, 0));
 		cobraModel.renderMdl(player.getPosition());
 		player.update(elapsedTime);
@@ -197,7 +237,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		glPushAttrib(GL_DEPTH_TEST);
 		glDisable(GL_DEPTH_TEST);
 		
-		//Points
+		//Points display
 		glTranslatef(50, 50, 0);
 		std::string out = "POINTS : " + std::to_string(playerPoints);
 		dtx_string(out.c_str());
@@ -210,7 +250,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		{
 			//Start/finish display
 			glTranslatef(-500, 200, 0);
-			std::string hiscore = "HIGH SCORE : " + std::to_string(playerPoints) + "\nPRESS SPACE TO PLAY";
+			std::string hiscore = "HIGH SCORE : " + std::to_string(playerHighScore) + "\nPRESS SPACE TO PLAY";
 			dtx_string(hiscore.c_str());
 		}
 

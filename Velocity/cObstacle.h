@@ -11,6 +11,16 @@ public:
 	~cObstacle();
 
 	void update(float elapsedTime);
+
+	void setIsInPlay(bool in);
+	bool getIsInPlay();
+
+	void setStartZ(float startz);
+	float getStartZ();
+
+private:
+	bool b_isInPlay;
+	float f_startZ;
 };
 
 #endif
