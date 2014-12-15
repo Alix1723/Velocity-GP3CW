@@ -20,6 +20,7 @@
 #include "cSound.h"
 
 #define FONT_SZ 42
+#define FONT_SZ_SMALL 32
 
 using namespace std;
 
@@ -88,10 +89,11 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	vector<cSkyscraper> skyList;
 	cModelLoader skyscraperModel;
 	skyscraperModel.initialise("Models/Skyscraper.obj");
-	float width = 400; //Horizontal range of skyscraper placement
-	float minWidth = 100; //Minumim distance from centre (highway)
+	int numSkyscrapers = 10;
+	float width = 600; //Horizontal range of skyscraper placement
+	float minWidth = 140; //Minumim distance from centre (highway)
 	float length = 4000; //Forward (Z) distance of skyscraper placement
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < numSkyscrapers; i++)
 	{
 		float rndX = fmod(rand(),width*2) - width;
 		if (rndX > -minWidth & rndX < 0){ rndX = minWidth; } //Clamping X above/below the minimum distance
@@ -112,8 +114,16 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	pointsSound.loadWAVFile("Audio/scorePoint.wav");
 
 	cSound explodeSound;
-	explodeSound.createContext();
 	explodeSound.loadWAVFile("Audio/shipExplode.wav");
+
+	cSound startSound;
+	startSound.loadWAVFile("Audio/powerUp.wav");
+
+	//"Piercing the Sky" by Magnus 'Souleye' Pålsson. http://souleyedigitalmusic.bandcamp.com/track/piercing-the-sky
+	cSound backgroundMusic;
+	backgroundMusic.loadWAVFile("Audio/PiercingTheSky.wav");
+	backgroundMusic.playAudio(AL_TRUE); //Set to loop
+	bool bgmPlaying = true;
 
 	//FORMAT: WAV, PCM, 44.1khz, 16 bit
 
@@ -135,6 +145,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	float maxDeadZone = 0.2f; //Threshold to prevent smoothing snapping back and forth
 
 	float distance = 0.0f; //Total distance travelled (used for gates, obstacles and skyscrapers)
+	float startSpeed = 700.0f; //Speed to start at
 
 	//Distance before the first obstacles will spawn
 	float nextObstacleSpawn = 1000;	
@@ -157,6 +168,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		//Game is in action
 		if (isGamePlaying)
 		{
+			//Play start sound
+			if (distance <= 0 & isSoundEnabled)
+			{
+				startSound.playAudio(AL_FALSE);
+			}
+
 			//Spawning new obstacles 
 			if (distance > nextObstacleSpawn)
 			{
@@ -196,7 +213,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 			}
 
 			//Increasing distance with time, multiplied by score
-			distance = distance + elapsedTime * (700 + playerPoints*2);
+			distance = distance + elapsedTime * (startSpeed + playerPoints * 4);
 		}
 
 		//Camera angle
@@ -222,23 +239,32 @@ int WINAPI WinMain(HINSTANCE hInstance,
 			if ((obList[j].getPosition().z < 0) & (obList[j].getIsInPlay() == true))
 			{
 				obList[j].setIsInPlay(false);
-				pointsSound.playAudio(AL_FALSE);
+				if (isSoundEnabled){ pointsSound.playAudio(AL_FALSE); }
+				pointsSound.setSoundPitch(0.5f + (playerPoints / 100.0f));
 				playerPoints++;
 			}
 			//Collision with player
 			if (obList[j].SphereSphereCollision(player.getPosition(), 12) )
-			{
+			{	
 				isGamePlaying = false;
-				//explodeSound.playAudio(AL_FALSE);
-				distance = 0;
-				xOffset = 0;
+				if (isSoundEnabled){ explodeSound.playAudio(AL_FALSE); }
+	
+				//Set highscore
 				if (playerHighScore < playerPoints)
 				{
 					playerHighScore = playerPoints;
 				}
-				playerPoints = 0;
+
+				//Reset everything to initial values/state
+				playerPoints = distance = xOffset = smoothxOffset = 0;
 				obList.clear();
 				nextObstacleSpawn = 1000;
+				for (int i = 0; i < numSkyscrapers; i++)
+				{
+					//Place all skyscrapers back at start
+					float rndZ = fmod(rand(), length);
+					skyList[i].setStartZ(1200 + rndZ);
+				}
 				break;
 			}
 
@@ -256,7 +282,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 				obList[j].update(elapsedTime);
 			}
 		}
-		
+
 		//Skyscrapers
 		for (int k = 0; k < skyList.size(); k++)
 		{
@@ -276,6 +302,22 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		cobraModel.renderMdl(player.getPosition(),0.0f);
 		player.update(elapsedTime);
 
+		//Toggling background music when isSoundEnabled changes
+		if (!isSoundEnabled & bgmPlaying)
+		{
+			backgroundMusic.stopAudio();
+			pointsSound.stopAudio(); //Also stop any other sound effects
+			startSound.stopAudio(); 
+			explodeSound.stopAudio();
+
+			bgmPlaying = false;
+		}
+		else if (isSoundEnabled & !bgmPlaying)
+		{
+			backgroundMusic.playAudio(AL_TRUE);
+			bgmPlaying = true;
+		}
+
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
 		glLoadIdentity();
@@ -287,20 +329,35 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		glDisable(GL_DEPTH_TEST);
 		
 		//Points display
-		glTranslatef(50, 50, 0);
+		glTranslatef(50, 80, 0);
 		std::string out = "POINTS : " + std::to_string(playerPoints);
 		dtx_string(out.c_str());
+		glTranslatef(-50, -50, 0);
 
-		//Camera indicator
-		glTranslatef(950, 0, 0);
+		//Camera & Audio indicator
+		glTranslatef(1100, 50, 0);
+		dtx_prepare_range(fntmain, FONT_SZ_SMALL, 0, 256);
+		dtx_use_font(fntmain, FONT_SZ_SMALL);
 		dtx_string(cameraToggle ? "[C] FOLLOW" : "[C] TOP");
-
+		dtx_string(isSoundEnabled ? "\n[V] MUTE" : "\n[V] UNMUTE");
+		glTranslatef(-1100, -50, 0);
+		
 		//Start/finish display
-		glTranslatef(-500, 200, 0);
+		dtx_prepare_range(fntmain, FONT_SZ, 0, 256);
+		dtx_use_font(fntmain, FONT_SZ);
+		glTranslatef(300, 350, 0);
 		if (!isGamePlaying)
 		{
-			std::string hiscore = "HIGH SCORE : " + std::to_string(playerHighScore) + "\nPRESS SPACE TO PLAY";
+			std::string hiscore = "HIGH SCORE : " + std::to_string(playerHighScore);
 			dtx_string(hiscore.c_str());
+
+			dtx_prepare_range(fntmain, FONT_SZ_SMALL, 0, 256);
+			dtx_use_font(fntmain, FONT_SZ_SMALL);
+			dtx_string(+"\n\nUSE [A] AND [D] / [LEFT] AND [RIGHT] TO AVOID OBSTACLES");
+			
+			dtx_prepare_range(fntmain, FONT_SZ, 0, 256);
+			dtx_use_font(fntmain, FONT_SZ);
+			dtx_string(+"\n\n\nPRESS [SPACE] TO PLAY");
 		}
 
 		glMatrixMode(GL_PROJECTION);

@@ -35,7 +35,6 @@ extern bool cameraToggle;
 extern float backgroundColours[3];
 extern int playerPoints;
 extern int playerHighScore;
-
-
+extern bool isSoundEnabled;
 
 #endif

@@ -290,6 +290,11 @@ LRESULT CALLBACK cWNDManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			isGamePlaying = true;
 		}
 		
+		//Mute/unmute audio
+		if ((wParam == 'v') | (wParam == 'V'))
+		{
+			isSoundEnabled = !isSoundEnabled;
+		}
 		break;
 		
 	case WM_SETFOCUS:

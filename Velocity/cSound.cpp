@@ -5,6 +5,7 @@ cSound.cpp
 */
 #pragma warning ( disable : 4996 )
 #include "cSound.h"
+#include "GameConstants.h"
 using namespace std;
 
 cSound::cSound()
@@ -24,7 +25,7 @@ cSound::~cSound()
 
 void cSound::createContext()
 {
-	m_OALDevice = alcOpenDevice(NULL);
+	m_OALDevice = alcOpenDevice(NULL); //alcOpen
 	if (m_OALDevice)
 	{
 		//Create a context
@@ -82,6 +83,14 @@ void cSound::stopAudio()
 {
 	//to stop
 	alSourceStop(m_OALSource);
+}
+
+void cSound::setSoundPitch(float pitch)
+{
+	if (m_OALSource != NULL)
+	{
+		alSourcef(m_OALSource, AL_PITCH, pitch);
+	}
 }
 
 void cSound::cleanUp()

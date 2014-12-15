@@ -55,5 +55,6 @@ public:
 	void playAudio(ALboolean sndLoop);
 	void stopAudio();
 	void cleanUp();
+	void setSoundPitch(float pitch);
 };
 #endif
