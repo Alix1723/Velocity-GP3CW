@@ -20,6 +20,8 @@
 
 #define FONT_SZ 42
 
+using namespace std;
+
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    LPSTR cmdLine,
@@ -39,7 +41,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
     //Attach our example to our window
 	pgmWNDMgr->attachOGLWnd(&theOGLWnd);
 
-
     //Attempt to create the window
 	if (!pgmWNDMgr->createWND(windowWidth, windowHeight, windowBPP))
     {
@@ -56,6 +57,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		pgmWNDMgr->destroyWND(); //Reset the display and exit
         return 1;
     }
+
+	//bool IsGamePlaying = false;
 
 	//Random seed
 	srand(time(NULL));
@@ -78,7 +81,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	cModelLoader obstacleModel;
 	obstacleModel.initialise("Models/Obstacle.obj");
 	
-	cObstacle obsArray[3];
+	vector<cObstacle> obList;
+	float minSpawnDelay = 1;
+	float maxSpawnDelay = 10;
 
 	//Font loading
 	struct dtx_font *fntmain;
@@ -123,29 +128,32 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		//Spawning new obstacles
+		if (IsGamePlaying)
+		{
+			//Spawning new obstacles
 
-		//Updating horizontal (x) position
-		xOffset = highwayLane*30.0f - 60.0f;
 
-		//Smoothing x movement
-		if (xOffset != smoothxOffset){
-			float difference = (xOffset - smoothxOffset);
+			//Updating horizontal (x) position
+			xOffset = highwayLane*30.0f - 60.0f;
 
-			//Avoid Zeno's "Arrow Paradox" with this check
-			if (difference < maxDeadZone & difference > -maxDeadZone)
-			{
-				smoothxOffset = xOffset; 
+			//Smoothing x movement
+			if (xOffset != smoothxOffset){
+				float difference = (xOffset - smoothxOffset);
+
+				//Avoid Zeno's "Arrow Paradox" with this check
+				if ((difference < maxDeadZone) & (difference > -maxDeadZone))
+				{
+					smoothxOffset = xOffset;
+				}
+				else
+				{	//Divide the difference by 2
+					smoothxOffset += difference / 2;
+				}
 			}
-			else
-			{	//Divide the difference by 2
-				smoothxOffset += difference / 2;
-			}
+
+			//Increasing distance with time
+			distance = distance + elapsedTime * 700;
 		}
-
-		//Increasing distance (for highway gates)
-		distance = fmod(distance + elapsedTime * 700, 1400);
-		
 		//Camera angle to use
 		if (cameraToggle)
 		{   
@@ -169,16 +177,15 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		highwayModel.renderMdl(glm::vec3(0, 0, 0));
 
 		//Looping highway bracket
-		highwayBracket.renderMdl(glm::vec3(0, 0, 1200 - distance));
+		highwayBracket.renderMdl(glm::vec3(0, 0, 1200 - fmod(distance,1400)));
 
 		//Obstacles
 		//obstacleModel.renderMdl(glm::vec3(0, 0, 100));
 		
 		//Player
-		player.setPosition(glm::vec3(smoothxOffset, 0, 0));
+		player.setPosition(glm::vec3(smoothxOffset, IsGamePlaying ? 0 : -1000, 0));
 		cobraModel.renderMdl(player.getPosition());
 		player.update(elapsedTime);
-
 
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
@@ -198,6 +205,14 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		//Camera indicator
 		glTranslatef(950, 0, 0);
 		dtx_string(cameraToggle ? "[C] FOLLOW" : "[C] TOP");
+
+		if (!IsGamePlaying)
+		{
+			//Start/finish display
+			glTranslatef(-500, 200, 0);
+			std::string hiscore = "HIGH SCORE : " + std::to_string(playerPoints) + "\nPRESS SPACE TO PLAY";
+			dtx_string(hiscore.c_str());
+		}
 
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();

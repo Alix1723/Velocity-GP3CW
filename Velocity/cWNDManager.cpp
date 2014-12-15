@@ -259,7 +259,7 @@ LRESULT CALLBACK cWNDManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			}
 			break;
 		}
-		if (wParam == VK_LEFT | wParam == 'd' | wParam == 'A')
+		if ((wParam == VK_LEFT) | (wParam == 'd') | (wParam == 'A'))
 		{
 			//Move one lane to the left
 			if (highwayLane > 1)
@@ -268,7 +268,7 @@ LRESULT CALLBACK cWNDManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			}
 			break;
 		}
-		if (wParam == VK_RIGHT | wParam == 'd' | wParam == 'D')
+		if ((wParam == VK_RIGHT) | (wParam == 'd') | (wParam == 'D'))
 		{
 			//Move one lane to the right
 			if (highwayLane < 3)
@@ -279,10 +279,16 @@ LRESULT CALLBACK cWNDManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		}
 
 		//Switch between cameras
-		if (wParam == 'c' | wParam == 'C')
+		if ((wParam == 'c') | (wParam == 'C'))
 		{
 			cameraToggle = !cameraToggle;
 			break;
+		}
+
+		//Begin play
+		if ((wParam == VK_SPACE) & !IsGamePlaying)
+		{
+			IsGamePlaying = true;
 		}
 		
 		break;

@@ -16,8 +16,6 @@
 #include <glm\gtc\type_ptr.hpp>
 #include <glm\gtx\quaternion.hpp>
 #include "glm-0.3.2\glm\glm.h"
-#include <vector>
-
 
 //Define the string to appear in the top left corner of the window
 #define WINDOW_TITLE "Velocity"
@@ -29,10 +27,12 @@ struct mdlDimensions{
 const float PLAYFIELDX = 100.0f;
 const float PLAYFIELDZ = 300.0f;
 
+extern bool IsGamePlaying;
 extern int drawMode;
 extern int highwayLane;
 extern bool cameraToggle;
 extern float backgroundColours[3];
+
 
 
 #endif
