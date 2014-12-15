@@ -12,7 +12,7 @@ void cModelLoader::initialise(const char* mdlFilename)
 	glmVertexNormals(m_model, 180.0, false);
 }
 
-void cModelLoader::renderMdl(glm::vec3 mdlPosition)
+void cModelLoader::renderMdl(glm::vec3 mdlPosition, float rotationAngle)
 {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -20,7 +20,7 @@ void cModelLoader::renderMdl(glm::vec3 mdlPosition)
 	//transformations here...
 	glTranslatef(mdlPosition.x, mdlPosition.y, -mdlPosition.z);
 
-	//glRotatef(rotationAngle, 0, 1, 0);
+	glRotatef(rotationAngle, 0, 1, 0);
 	glmDraw(m_model, GLM_SMOOTH | GLM_TEXTURE | GLM_MATERIAL);
 	// Render Text
 	glMatrixMode(GL_MODELVIEW);

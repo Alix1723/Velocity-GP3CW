@@ -9,7 +9,7 @@ public:
 	cModelLoader();
 
 	void initialise(const char* mdlFilename);
-	void renderMdl(glm::vec3 mdlPosition);
+	void renderMdl(glm::vec3 mdlPosition, float rotationAngle);
 
 	~cModelLoader();
 private:

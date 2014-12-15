@@ -85,7 +85,26 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	float maxSpawnDelay = 450.0f; //Maximum delay from last spawn (minimum + random value between 0 and this maximum);
 
 	//Skyscrapers
-	//vector<cSkysc> 
+	vector<cSkyscraper> skyList;
+	cModelLoader skyscraperModel;
+	skyscraperModel.initialise("Models/Skyscraper.obj");
+	float width = 400; //Horizontal range of skyscraper placement
+	float minWidth = 100; //Minumim distance from centre (highway)
+	float length = 4000; //Forward (Z) distance of skyscraper placement
+	for (int i = 0; i < 10; i++)
+	{
+		float rndX = fmod(rand(),width*2) - width;
+		if (rndX > -minWidth & rndX < 0){ rndX = minWidth; } //Clamping X above/below the minimum distance
+		if (rndX < minWidth & rndX > 0){ rndX = minWidth; }
+		float rndZ = fmod(rand(), length);
+		
+		cSkyscraper sk;
+		sk.initialise(glm::vec3(rndX, 0, 1200 + rndZ), 0, glm::vec3(1, 1, 1), glm::vec3(0, 0, 0), 0.0f, true);
+		sk.setRotation(rndZ * 100.0f);
+		sk.setStartZ(1200 + rndZ);
+
+		skyList.push_back(sk);
+	}
 
 	//Font loading
 	struct dtx_font *fntmain;
@@ -103,9 +122,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	float xOffset = 0.0f;
 	float smoothxOffset = 0.0f; //Smoothing out X movement
 	float maxDeadZone = 0.2f; //Threshold to prevent smoothing snapping back and forth
-	float maxDelta = 5; //How quickly to move between lanes
 
-	float distance = 0.0f; //Total distance travelled (used for gates and obstacles)
+	float distance = 0.0f; //Total distance travelled (used for gates, obstacles and skyscrapers)
 
 	//Distance before the first obstacles will spawn
 	float nextObstacleSpawn = 1000;	
@@ -162,12 +180,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
 				}
 				else
 				{	//Divide the difference by 2
-					smoothxOffset += difference / 2;
+					smoothxOffset += difference / 3;
 				}
 			}
 
-			//Increasing distance with time
-			distance = distance + elapsedTime * 700;
+			//Increasing distance with time, multiplied by score
+			distance = distance + elapsedTime * (700 + playerPoints*2);
 		}
 
 		//Camera angle
@@ -181,10 +199,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		}
 
 		//Highway model
-		highwayModel.renderMdl(glm::vec3(0, 0, 0));
+		highwayModel.renderMdl(glm::vec3(0, 0, 0),0.0f);
 
 		//Looping highway bracket
-		highwayBracket.renderMdl(glm::vec3(0, 0, 1200 - fmod(distance,1400)));
+		highwayBracket.renderMdl(glm::vec3(0, 0, 1200 - fmod(distance,1400)),0.0f);
 
 		//Obstacles
 		for(int j = 0; j < obList.size(); j++)
@@ -196,14 +214,18 @@ int WINAPI WinMain(HINSTANCE hInstance,
 				playerPoints++;
 			}
 			//Collision with player
-			if (obList[j].SphereSphereCollision(player.getPosition(), 10) & (obList[j].getIsInPlay() == true))
+			if (obList[j].SphereSphereCollision(player.getPosition(), 12) )
 			{
 				IsGamePlaying = false;
 				distance = 0;
 				xOffset = 0;
-				playerHighScore = playerPoints;
+				if (playerHighScore < playerPoints)
+				{
+					playerHighScore = playerPoints;
+				}
 				playerPoints = 0;
 				obList.clear();
+				nextObstacleSpawn = 1000;
 				break;
 			}
 
@@ -211,20 +233,34 @@ int WINAPI WinMain(HINSTANCE hInstance,
 			if (obList[j].getPosition().z < -200)
 			{
 				obList.erase((obList.begin() + j));
-				break;
+				//break;
 			}
 			//Otherwise, move the obstacle down the highway
 			else
 			{
 				obList[j].setPosition(glm::vec3(obList[j].getPosition().x, 0, 1200 - (distance - obList[j].getStartZ())));
-				obstacleModel.renderMdl(obList[j].getPosition());
+				obstacleModel.renderMdl(obList[j].getPosition(),0.0f);
 				obList[j].update(elapsedTime);
 			}
 		}
 		
+		//Skyscrapers
+		for (int k = 0; k < skyList.size(); k++)
+		{
+			//Reset the starting Z value to loop the skyscraper back
+			if (skyList[k].getPosition().z < -200)
+			{
+				skyList[k].setStartZ(distance + (fmod(rand(), 5000)));
+			}
+
+			skyList[k].setPosition(glm::vec3(skyList[k].getPosition().x, -100, 1400 - (distance - skyList[k].getStartZ())));
+			skyscraperModel.renderMdl(skyList[k].getPosition(),skyList[k].getRotation());
+			skyList[k].update(elapsedTime);
+		}
+		
 		//Player positioning
 		player.setPosition(glm::vec3(smoothxOffset, IsGamePlaying ? 0 : -1000, 0));
-		cobraModel.renderMdl(player.getPosition());
+		cobraModel.renderMdl(player.getPosition(),0.0f);
 		player.update(elapsedTime);
 
 		glMatrixMode(GL_PROJECTION);
