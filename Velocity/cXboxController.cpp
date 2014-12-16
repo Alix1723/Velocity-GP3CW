@@ -29,21 +29,23 @@ void cXboxController::Vibrate(int left, int right)
 	Vibration.wRightMotorSpeed = right;
 
 	XInputSetState(i_controllerNum, &Vibration);
+
+	b_isVibrating = ((left + right) > 0);
 }
 
 //Update boolean values for inputs
-void cXboxController::Update()
+void cXboxController::Update(float elapsedTime)
 {
 	XINPUT_STATE state = GetState();
-	button_A = (state.Gamepad.wButtons & XINPUT_GAMEPAD_A);
-	button_B = (state.Gamepad.wButtons & XINPUT_GAMEPAD_B);
-	button_X = (state.Gamepad.wButtons & XINPUT_GAMEPAD_X);
-	button_Y = (state.Gamepad.wButtons & XINPUT_GAMEPAD_Y);
+	button_A = (bool)(state.Gamepad.wButtons & XINPUT_GAMEPAD_A);
+	button_B = (bool)(state.Gamepad.wButtons & XINPUT_GAMEPAD_B);
+	button_X = (bool)(state.Gamepad.wButtons & XINPUT_GAMEPAD_X);
+	button_Y = (bool)(state.Gamepad.wButtons & XINPUT_GAMEPAD_Y);
 	
 	//Note: Joystick has a maximum X range of -32767 / 32767 
-	float lx = (state.Gamepad.sThumbLX) / 32767;
-	button_Left = (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) | (lx < -0.6f);
-	button_Right = (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) | (lx > 0.6f);
+	float lx = (float)((state.Gamepad.sThumbLX) / 32767);
+	button_Left = (bool)(state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) | (lx < -0.6f);
+	button_Right = (bool)(state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) | (lx > 0.6f);
 
 	if (!button_A & button_A_Latch) { button_A_Latch = false; } //Resetting latches for the next button press
 	if (!button_B & button_B_Latch) { button_B_Latch = false; }
@@ -51,6 +53,20 @@ void cXboxController::Update()
 	if (!button_Y & button_Y_Latch) { button_Y_Latch = false; }
 	if (!button_Left & button_Left_Latch) { button_Left_Latch = false; }
 	if (!button_Right & button_Right_Latch) { button_Right_Latch = false; }
+
+	if (b_isVibrating) //Limit vibration time (The XBOne controller does this automatically, but the 360 doesn't)
+	{
+		if (f_currentVibrationTime < f_maxVibrationTime)
+		{
+			f_currentVibrationTime += elapsedTime;
+		}
+		else
+		{
+			b_isVibrating = false;
+			Vibrate(0, 0);
+			f_currentVibrationTime = 0.0f;
+		}
+	}
 }
 
 //Constant presses (held buttons)

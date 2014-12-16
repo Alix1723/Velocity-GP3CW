@@ -173,7 +173,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		float elapsedTime = pgmWNDMgr->getElapsedSeconds();
 		
 		//Process controller inputs
-		controller1->Update(); 
+		controller1->Update(elapsedTime); 
 		if (!controllerEnabled)
 		{	//Enabling controller inputs when A is pressed
 			if (controller1->GetButtonDown(1))

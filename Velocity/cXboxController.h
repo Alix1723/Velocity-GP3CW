@@ -15,7 +15,7 @@ public:
 	bool GetControllerConnected();
 	void Vibrate(int left, int right);
 
-	void Update();
+	void Update(float elapsedTime);
 
 	bool GetButton(int button); //In order: A, B, X, Y, Left, Right
 	bool GetButtonDown(int button); //Will return true once per button press
@@ -37,6 +37,10 @@ private:
 	bool button_Y_Latch = false;
 	bool button_Left_Latch = false;
 	bool button_Right_Latch = false;
+
+	bool b_isVibrating = false;
+	float f_maxVibrationTime = 1.0f;
+	float f_currentVibrationTime = 0.0f; //Prevent vibration going on indefinitely
 };
 
 #endif
