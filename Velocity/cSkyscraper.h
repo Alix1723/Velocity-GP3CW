@@ -4,6 +4,8 @@
 #include "GameConstants.h"
 #include "cModel.h"
 
+//Class to hold the background Skyscrapers, similar to cObstacle, but with no validity/points check.
+
 class cSkyscraper : public cModel
 {
 

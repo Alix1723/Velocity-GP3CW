@@ -3,6 +3,9 @@
 
 #include "GameConstants.h"
 
+//Model abstraction in the game space. Holds position, rotation, etc., used to calculate positions/movement as well as give information to the renderMdl() function.
+//Code duplicated from Lab9 by Bobby Law.
+
 class cModel
 {
 public:

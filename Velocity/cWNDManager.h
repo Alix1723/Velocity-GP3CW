@@ -10,6 +10,8 @@ cWNDManager.h
 #include <windows.h>
 #include "windowOGL.h"
 
+//Handles the Win32 window creation/destruction, and also messages (such as keyboard inputs).
+//Code (mostly) duplicated from Labs by Bobby Law.
 
 class cWNDManager
 {

@@ -15,6 +15,9 @@ cSound.h
 
 using namespace std;
 
+//Class to hold one sound source+buffer and handle loading wav files.
+//Code duplicated from Lab9 by Bobby Law.
+
 class cSound
 {
 private:

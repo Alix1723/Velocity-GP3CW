@@ -17,8 +17,9 @@
 #include <glm\gtx\quaternion.hpp>
 #include "glm-0.3.2\glm\glm.h"
 
-//Define the string to appear in the top left corner of the window
 #define WINDOW_TITLE "Velocity"
+
+//Holds all globally relevant variables for the game.
 
 struct mdlDimensions{
 	float s_mdlWidth, s_mdlheight, s_mdldepth;
@@ -28,7 +29,7 @@ const float PLAYFIELDX = 100.0f;
 const float PLAYFIELDZ = 300.0f;
 
 extern bool isGamePlaying;
-//extern bool 
+extern bool controllerEnabled;
 extern int drawMode;
 extern int highwayLane;
 extern bool cameraToggle;

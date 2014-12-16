@@ -3,6 +3,9 @@
 
 #include "GameConstants.h"
 
+//Loads models from .obj files. Calling renderMdl() will render one instance of a particular model at that position, and so can be used multiple times for multiple identical models.
+//Code duplicated from Lab9 by Bobby Law.
+
 class cModelLoader
 {
 public:

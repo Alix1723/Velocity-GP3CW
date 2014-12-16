@@ -7,6 +7,7 @@ GameConstants.cpp
 #include "GameConstants.h"
 
 bool isGamePlaying = false;
+bool controllerEnabled = false;
 int drawMode = 0;
 int highwayLane = 2;
 bool cameraToggle = false;

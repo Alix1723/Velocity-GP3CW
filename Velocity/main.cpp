@@ -1,8 +1,13 @@
 #define WIN32_LEAN_AND_MEAN
 #define WIN32_EXTRA_LEAN
 
-#define GLX_GLXEXT_LEGACY //Must be declared so that our local glxext.h is picked up, rather than the system one
+#define GLX_GLXEXT_LEGACY 
 
+/*
+	"VELOCITY" 
+	Alasdair Gibson S1111320
+	Games Programming 3 Coursework
+*/
 
 #include "GameConstants.h"
 #include <windows.h>
@@ -18,6 +23,7 @@
 #include "cObstacle.h"
 #include "cSkyscraper.h"
 #include "cSound.h"
+#include "cXboxController.h"
 
 #define FONT_SZ 42
 #define FONT_SZ_SMALL 32
@@ -29,38 +35,37 @@ int WINAPI WinMain(HINSTANCE hInstance,
                    LPSTR cmdLine,
                    int cmdShow)
 {
-    //Set our window settings
+    //Window settings
     const int windowWidth = 1280;
     const int windowHeight = 720;
     const int windowBPP = 16;
 
-    //This is our window
+    //Window instance
 	static cWNDManager* pgmWNDMgr = cWNDManager::getInstance();
 
-    //The example OpenGL code
+    //OpenGL window
     windowOGL theOGLWnd;
 
-    //Attach our example to our window
+    //Attach OpenGL to current window
 	pgmWNDMgr->attachOGLWnd(&theOGLWnd);
 
     //Attempt to create the window
 	if (!pgmWNDMgr->createWND(windowWidth, windowHeight, windowBPP))
     {
         //If it fails
-
         MessageBox(NULL, "Unable to create the OpenGL Window", "An error occurred", MB_ICONERROR | MB_OK);
 		pgmWNDMgr->destroyWND(); //Reset the display and exit
         return 1;
     }
 
-	if (!theOGLWnd.initOGL()) //Initialize our example
+	if (!theOGLWnd.initOGL()) //Initialize window
     {
         MessageBox(NULL, "Could not initialize the application", "An error occurred", MB_ICONERROR | MB_OK);
 		pgmWNDMgr->destroyWND(); //Reset the display and exit
         return 1;
     }
 
-	//Random seed
+	//Randomized seed
 	srand(time(NULL));
 	
 	//Player model
@@ -109,8 +114,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	}
 
 	//Audio loading
+	//FORMAT: WAV, PCM, 44.1khz, 16 bit
 	cSound pointsSound;
-	pointsSound.createContext();
+	pointsSound.createContext(); //NOTE: Only do this once, else sounds will fail to play/become distorted and broken.
 	pointsSound.loadWAVFile("Audio/scorePoint.wav");
 
 	cSound explodeSound;
@@ -125,7 +131,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	backgroundMusic.playAudio(AL_TRUE); //Set to loop
 	bool bgmPlaying = true;
 
-	//FORMAT: WAV, PCM, 44.1khz, 16 bit
 
 	//Font loading
 	struct dtx_font *fntmain;
@@ -133,11 +138,13 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	dtx_prepare_range(fntmain, FONT_SZ, 0, 256);
 	dtx_use_font(fntmain, FONT_SZ);
 
+
 	//Camera
 	bool isCameraTopDown = false;
 	float cameraX = 0.0f;
 	float cameraY = 40.0f;
 	float cameraZ = 80.0f;
+
 
 	//Movement variables
 	float xOffset = 0.0f;
@@ -147,28 +154,78 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	float distance = 0.0f; //Total distance travelled (used for gates, obstacles and skyscrapers)
 	float startSpeed = 700.0f; //Speed to start at
 
+
 	//Distance before the first obstacles will spawn
 	float nextObstacleSpawn = 1000;	
 
-    //This is the mainloop, we render frames until isRunning returns false
+
+	//Controller input
+	cXboxController* controller1 = new cXboxController(0);
+
+
+    //Main game loop, runs until the window shuts down.
 	while (pgmWNDMgr->isWNDRunning())
     {
-		pgmWNDMgr->processWNDEvents(); //Process any window events
-		
-		//The time that passed since the last frame
-		float elapsedTime = pgmWNDMgr->getElapsedSeconds();
+		//Process window events (including keyboard inputs)
+		pgmWNDMgr->processWNDEvents(); 
 
+		//Calculate the time that passed since the last frame
+		float elapsedTime = pgmWNDMgr->getElapsedSeconds();
+		
+		//Process controller inputs
+		controller1->Update(); 
+		if (!controllerEnabled)
+		{	//Enabling controller inputs when A is pressed
+			if (controller1->GetButtonDown(1))
+			{
+				controllerEnabled = 1;
+			}
+		}
+		else
+		{
+			//Start
+			if (controller1->GetButtonDown(1) & !isGamePlaying)
+			{
+				isGamePlaying = true;
+				controller1->Vibrate(0,0);
+			}
+
+			//Left
+			if (controller1->GetButtonDown(5) & highwayLane>1)
+			{
+				highwayLane--;
+			}
+			//Right
+			if (controller1->GetButtonDown(6) & highwayLane<3)
+			{
+				highwayLane++;
+			}
+
+			//Camera
+			if (controller1->GetButtonDown(3))
+			{
+				cameraToggle = !cameraToggle;
+			}
+
+			//Audio mute/unmute
+			if (controller1->GetButtonDown(2))
+			{
+				isSoundEnabled = !isSoundEnabled;
+			}
+		}
+		
+		//Clearing the window
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		theOGLWnd.initOGL();
 		glClearColor(backgroundColours[0], backgroundColours[1], backgroundColours[2], 1.0f);
-
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		//Game is in action
+
+		//Game has started
 		if (isGamePlaying)
 		{
-			//Play start sound
+			//Play start sound once
 			if (distance <= 0 & isSoundEnabled)
 			{
 				startSound.playAudio(AL_FALSE);
@@ -207,7 +264,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 					smoothxOffset = xOffset;
 				}
 				else
-				{	//Divide the difference by 2
+				{	//Divide the difference by 3
 					smoothxOffset += difference / 3;
 				}
 			}
@@ -248,7 +305,13 @@ int WINAPI WinMain(HINSTANCE hInstance,
 			{	
 				isGamePlaying = false;
 				if (isSoundEnabled){ explodeSound.playAudio(AL_FALSE); }
-	
+				
+				//Force feedback
+				if (controllerEnabled)
+				{
+					controller1->Vibrate(65535, 65535);
+				}
+
 				//Set highscore
 				if (playerHighScore < playerPoints)
 				{
@@ -297,7 +360,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 			skyList[k].update(elapsedTime);
 		}
 		
-		//Player positioning
+		//Player model rendering
 		player.setPosition(glm::vec3(smoothxOffset, isGamePlaying ? 0 : -1000, 0));
 		cobraModel.renderMdl(player.getPosition(),0.0f);
 		player.update(elapsedTime);
@@ -334,18 +397,26 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		dtx_string(out.c_str());
 		glTranslatef(-50, -50, 0);
 
-		//Camera & Audio indicator
+		//Camera & Audio indicators
 		glTranslatef(1100, 50, 0);
 		dtx_prepare_range(fntmain, FONT_SZ_SMALL, 0, 256);
 		dtx_use_font(fntmain, FONT_SZ_SMALL);
-		dtx_string(cameraToggle ? "[C] FOLLOW" : "[C] TOP");
-		dtx_string(isSoundEnabled ? "\n[V] MUTE" : "\n[V] UNMUTE");
+		if (controllerEnabled)
+		{
+			dtx_string(cameraToggle ? "[X] FOLLOW" : "[X] TOP");
+			dtx_string(isSoundEnabled ? "\n[B] MUTE" : "\n[B] UNMUTE");
+		}
+		else
+		{
+			dtx_string(cameraToggle ? "[C] FOLLOW" : "[C] TOP");
+			dtx_string(isSoundEnabled ? "\n[V] MUTE" : "\n[V] UNMUTE");
+		}
 		glTranslatef(-1100, -50, 0);
 		
 		//Start/finish display
 		dtx_prepare_range(fntmain, FONT_SZ, 0, 256);
 		dtx_use_font(fntmain, FONT_SZ);
-		glTranslatef(300, 350, 0);
+		glTranslatef(150, 350, 0);
 		if (!isGamePlaying)
 		{
 			std::string hiscore = "HIGH SCORE : " + std::to_string(playerHighScore);
@@ -353,11 +424,15 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 			dtx_prepare_range(fntmain, FONT_SZ_SMALL, 0, 256);
 			dtx_use_font(fntmain, FONT_SZ_SMALL);
-			dtx_string(+"\n\nUSE [A] AND [D] / [LEFT] AND [RIGHT] TO AVOID OBSTACLES");
+			dtx_string(controllerEnabled ? "\n\nUSE [LEFT STICK] / [DPAD LEFT] AND [DPAD RIGHT] TO AVOID OBSTACLES" : "\n\nUSE [A] AND [D] / [LEFT] AND [RIGHT] TO AVOID OBSTACLES");
 			
 			dtx_prepare_range(fntmain, FONT_SZ, 0, 256);
 			dtx_use_font(fntmain, FONT_SZ);
-			dtx_string(+"\n\n\nPRESS [SPACE] TO PLAY");
+			dtx_string(controllerEnabled ? "\n\n\nPRESS [A] TO PLAY" : "\n\n\nPRESS [SPACE] TO PLAY"); //Modify display text to suit input method
+
+			//Title
+			glTranslatef(380, 200, 0);
+			dtx_string("[ VELOCITY ]");
 		}
 
 		glMatrixMode(GL_PROJECTION);
@@ -371,6 +446,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	theOGLWnd.shutdown(); //Free any resources
 	pgmWNDMgr->destroyWND(); //Destroy the program window
+	delete(controller1); //Remove controller object
 
     return 0; //Return success
 }

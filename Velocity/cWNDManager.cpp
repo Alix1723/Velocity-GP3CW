@@ -230,6 +230,12 @@ LRESULT CALLBACK cWNDManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		break;
 	
 	case WM_KEYDOWN:
+		//Switching back to keyboard inputs
+		if (controllerEnabled)
+		{
+			controllerEnabled = false;
+		}
+
 		if (wParam == VK_ESCAPE) //If the escape key was pressed
 		{
 			DestroyWindow(pInstance->m_hwnd); //Send a WM_DESTROY message

@@ -48,7 +48,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glm-0.3.2lib.lib;glew32.lib;glew32s.lib;libdrawtext.lib;OpenAL32.lib;alut.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glm-0.3.2lib.lib;glew32.lib;glew32s.lib;libdrawtext.lib;OpenAL32.lib;alut.lib;XInput.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -73,6 +73,7 @@
     <ClCompile Include="cSkyscraper.cpp" />
     <ClCompile Include="cSound.cpp" />
     <ClCompile Include="cWNDManager.cpp" />
+    <ClCompile Include="cXboxController.cpp" />
     <ClCompile Include="GameConstants.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="windowOGL.cpp" />
@@ -85,6 +86,7 @@
     <ClInclude Include="cSkyscraper.h" />
     <ClInclude Include="cSound.h" />
     <ClInclude Include="cWNDManager.h" />
+    <ClInclude Include="cXboxController.h" />
     <ClInclude Include="GameConstants.h" />
     <ClInclude Include="wglext.h" />
     <ClInclude Include="windowOGL.h" />

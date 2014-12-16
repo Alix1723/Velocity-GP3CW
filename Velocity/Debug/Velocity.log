@@ -1,21 +1,24 @@
-﻿Build started 15/12/2014 19:53:59.
+﻿Build started 16/12/2014 10:46:57.
      1>Project "C:\Users\Alix\Documents\Visual Studio 2013\Projects\Velocity-GP3CW\Velocity\Velocity.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
          main.cpp
-     1>c:\users\alix\documents\visual studio 2013\projects\velocity-gp3cw\velocity\main.cpp(99): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
      1>c:\users\alix\documents\visual studio 2013\projects\velocity-gp3cw\velocity\main.cpp(100): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
-     1>c:\users\alix\documents\visual studio 2013\projects\velocity-gp3cw\velocity\main.cpp(172): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
-     1>c:\users\alix\documents\visual studio 2013\projects\velocity-gp3cw\velocity\main.cpp(236): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\alix\documents\visual studio 2013\projects\velocity-gp3cw\velocity\main.cpp(287): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\alix\documents\visual studio 2013\projects\velocity-gp3cw\velocity\main.cpp(101): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
+     1>c:\users\alix\documents\visual studio 2013\projects\velocity-gp3cw\velocity\main.cpp(181): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
+     1>c:\users\alix\documents\visual studio 2013\projects\velocity-gp3cw\velocity\main.cpp(186): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
+     1>c:\users\alix\documents\visual studio 2013\projects\velocity-gp3cw\velocity\main.cpp(218): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
+     1>c:\users\alix\documents\visual studio 2013\projects\velocity-gp3cw\velocity\main.cpp(282): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\alix\documents\visual studio 2013\projects\velocity-gp3cw\velocity\main.cpp(339): warning C4018: '<' : signed/unsigned mismatch
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Alix\Documents\Visual Studio 2013\Projects\Velocity-GP3CW\Velocity\Debug\Velocity.exe" /INCREMENTAL /NOLOGO opengl32.lib "glm-0.3.2lib.lib" glew32.lib glew32s.lib libdrawtext.lib OpenAL32.lib alut.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Alix\Documents\Visual Studio 2013\Projects\Velocity-GP3CW\Velocity\Debug\Velocity.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Alix\Documents\Visual Studio 2013\Projects\Velocity-GP3CW\Velocity\Debug\Velocity.lib" /MACHINE:X86 Debug\cModel.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Alix\Documents\Visual Studio 2013\Projects\Velocity-GP3CW\Velocity\Debug\Velocity.exe" /INCREMENTAL /NOLOGO opengl32.lib "glm-0.3.2lib.lib" glew32.lib glew32s.lib libdrawtext.lib OpenAL32.lib alut.lib XInput.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Alix\Documents\Visual Studio 2013\Projects\Velocity-GP3CW\Velocity\Debug\Velocity.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Alix\Documents\Visual Studio 2013\Projects\Velocity-GP3CW\Velocity\Debug\Velocity.lib" /MACHINE:X86 Debug\cModel.obj
          Debug\cModelLoader.obj
          Debug\cObstacle.obj
          Debug\cPlayer.obj
          Debug\cSkyscraper.obj
          Debug\cSound.obj
          Debug\cWNDManager.obj
+         Debug\cXboxController.obj
          Debug\GameConstants.obj
          Debug\main.obj
          Debug\windowOGL.obj
@@ -24,4 +27,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.11
+Time Elapsed 00:00:00.99

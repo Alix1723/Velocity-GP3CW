@@ -31,6 +31,9 @@
     <ClCompile Include="cSound.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="cXboxController.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cModel.h">
@@ -61,6 +64,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="cSound.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="cXboxController.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
